@@ -1,0 +1,11 @@
+Theo:
+- change size of hero, monster and bullets on resize
+- localStorage or cookie
+
+Eric:
+- set up hero, monster and bullet game objects
+- audio stuff
+
+Done:
+- background images covers entire screen
+- on resize, background changes size
