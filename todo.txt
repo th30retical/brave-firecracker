@@ -4,7 +4,7 @@ Theo:
 
 Eric:
 - set up hero, monster and bullet game objects
-- audio stuff
+- audio stuff (ie. toggle audio from mute to playing)
 
 Done:
 - background images covers entire screen
