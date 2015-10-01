@@ -6,13 +6,38 @@ canvas.height = window.innerHeight;
 canvas.setAttribute('id','background');
 document.body.appendChild(canvas);
 
-// initialize images here
+// init img variables
 var bgReady = false;
 var bgImage = new Image();
+var heroReady = false;
+var heroImage = new Image();
+var monsterReady = false;
+var monsterImage = new Image();
+var bulletReady = false;
+var bulletImage = new Image();
+
+// initialize images here
 bgImage.onload = function() {
   bgReady = true;
 }
 bgImage.src = 'images/background.png';
+
+heroImage.onload = function() {
+  heroReady = true;
+}
+heroImage.src = 'images/hero.png';
+
+monsterImage.onload = function() {
+  monsterReady = true;
+}
+monsterImage.src = 'images/monster.png';
+
+bulletImage.onload = function() {
+  bulletReady = true;
+}
+// find bullet image first
+// bulletImage.src = '#';
+
 
 // GET HERO AND MONSTER IMAGES HERE
 
