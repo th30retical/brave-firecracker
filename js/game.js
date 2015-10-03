@@ -35,13 +35,10 @@ monsterImage.src = 'images/monster.png';
 bulletImage.onload = function() {
   bulletReady = true;
 }
-// find bullet image first
-// bulletImage.src = '#';
+bulletImage.src = 'images/bullet.png';
 
 
-// GET HERO AND MONSTER IMAGES HERE
-
-// INITIALIZE HERO AND MONSTER GAME OBJECTS
+// INITIALIZE HERO, MONSTER, AND BULLET GAME OBJECTS
 
 
 var render = function() {
