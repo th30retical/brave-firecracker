@@ -1,11 +1,18 @@
-Theo:
+Todo:
 - change size of hero, monster and bullets on resize
-- localStorage or cookie
-
-Eric:
-- set up hero, monster and bullet game objects
-- audio stuff (ie. toggle audio from mute to playing)
+- window.localStorage
+- collision detection for bullets and monsters
+- score keeping
+- sound
+- reset function instead of the code in update
 
 Done:
 - background images covers entire screen
 - on resize, background changes size
+- game images done
+- game objects initalized
+- update and render functions
+- bullet spawn on click
+- clear bullet when it goes out of screen
+- spawn monster every 3 seconds
+- clear monster when it reaches the left side of screen
