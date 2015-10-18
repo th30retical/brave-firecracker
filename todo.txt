@@ -9,6 +9,7 @@ Todo:
 Done:
 - background images covers entire screen
 - on resize, background changes size
+oct 18
 - game images done
 - game objects initalized
 - update and render functions
