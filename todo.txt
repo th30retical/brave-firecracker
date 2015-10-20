@@ -1,10 +1,7 @@
 Todo:
-- change size of hero, monster and bullets on resize
-- window.localStorage
 - collision detection for bullets and monsters
 - score keeping
 - sound
-- reset function instead of the code in update
 
 Done:
 - background images covers entire screen
@@ -17,3 +14,7 @@ oct 18
 - clear bullet when it goes out of screen
 - spawn monster every 3 seconds
 - clear monster when it reaches the left side of screen
+oct 20
+- localStorage
+- hero stays in the center of screen
+- don't need reset function

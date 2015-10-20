@@ -49,8 +49,6 @@ var monster = function(y) {
   this.y = y;
   this.speed = 256;
 }
-// change this to local storage after
-var monstersDead = 0, monstersPassed = 0;
 var monsters = [];
 
 var bullet = function(xSpeed, ySpeed) {
@@ -62,18 +60,25 @@ var bullet = function(xSpeed, ySpeed) {
 }
 var bullets = [];
 
+
+// initialize local storage variables if needed
+if (!localStorage.monstersKilled) {
+  localStorage.monstersKilled = 0;
+}
+if (!localStorage.monstersEscaped) {
+  localStorage.monstersEscaped = 0;
+}
+if (!localStorage.bulletsFired) {
+  localStorage.bulletsFired = 0;
+}
+
 var fire = function(x, y) {
   if (bulletReady) {
     var dir = Math.atan((y - (window.innerHeight/2))/x);
     bullets.push(new bullet(Math.cos(dir), Math.sin(dir)));
+    localStorage.bulletsFired++;
   }
 }
-
-// INPUT CONTROLS
-addEventListener("click", function(e) {
-  fire(e.clientX, e.clientY);
-  console.log('boom');
-});
 
 
 // SPAWN NIGGAS
@@ -142,6 +147,21 @@ var render = function() {
       }
     }
   }
+
+  // Score stuff
+	ctx.fillStyle = "rgb(250, 250, 250)";
+	ctx.font = "20px Helvetica";
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
+	ctx.fillText("Goblins dead: " + localStorage.monstersKilled, 0, 0);
+  ctx.fillText("Goblins escaped: " + localStorage.monstersEscaped, 0, 30);
+  var acc;
+  if (localStorage.bulletsFired == 0) {
+    acc = 100;
+  } else {
+    acc = Math.floor((localStorage.monstersKilled/localStorage.bulletsFired) * 100);
+  }
+  ctx.fillText("Accuracy: " + acc + "%", 0, 60);
 }
 
 var main = function() {
@@ -160,7 +180,7 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 var then = Date.now();
-// reset();
+
 main();
 window.setInterval(spawn, 3000);
 
@@ -168,4 +188,11 @@ window.setInterval(spawn, 3000);
 window.addEventListener('resize', function() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  hero.y = window.innerHeight/2;
 })
+
+// INPUT CONTROLS
+addEventListener("click", function(e) {
+  fire(e.clientX, e.clientY);
+  console.log('boom');
+});
