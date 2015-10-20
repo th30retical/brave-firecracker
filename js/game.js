@@ -16,6 +16,13 @@ var monsterImage = new Image();
 var bulletReady = false;
 var bulletImage = new Image();
 
+//init sounds
+var shotSound = new Audio ('sounds/shot.mp3');
+var bgMusic = new Audio('sounds/testMusic.mp3');
+bgMusic.play();
+
+
+
 // initialize images here
 bgImage.onload = function() {
   bgReady = true;
@@ -26,6 +33,7 @@ heroImage.onload = function() {
   heroReady = true;
 }
 heroImage.src = 'images/hero.png';
+heroImage.setAttribute("height","200px");
 
 monsterImage.onload = function() {
   monsterReady = true;
@@ -48,6 +56,8 @@ var monster = function(y) {
   this.x = window.innerWidth;
   this.y = y;
   this.speed = 256;
+  
+  
 }
 // change this to local storage after
 var monstersDead = 0, monstersPassed = 0;
@@ -59,6 +69,7 @@ var bullet = function(xSpeed, ySpeed) {
   this.speed = 300;
   this.xSpeed = xSpeed*this.speed;
   this.ySpeed = ySpeed*this.speed;
+   
 }
 var bullets = [];
 
@@ -66,6 +77,7 @@ var fire = function(x, y) {
   if (bulletReady) {
     var dir = Math.atan((y - (window.innerHeight/2))/x);
     bullets.push(new bullet(Math.cos(dir), Math.sin(dir)));
+	shotSound.play();
   }
 }
 
@@ -144,6 +156,8 @@ var render = function() {
   }
 }
 
+
+
 var main = function() {
   var now = Date.now();
   var delta = now - then;
@@ -168,4 +182,5 @@ window.setInterval(spawn, 3000);
 window.addEventListener('resize', function() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  bullet.width = 10;
 })
