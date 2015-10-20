@@ -32,7 +32,6 @@ heroImage.onload = function() {
   heroReady = true;
 }
 heroImage.src = 'images/hero.png';
-heroImage.setAttribute("height","200px");
 
 monsterImage.onload = function() {
   monsterReady = true;
@@ -48,15 +47,20 @@ bulletImage.src = 'images/bullet.png';
 // INITIALIZE HERO, MONSTER, AND BULLET GAME OBJECTS
 var hero = {
   x: 0,
-  y: window.innerHeight/2
+  y: window.innerHeight/2,
+  height:heroImage.height,
+  width:heroImage.width
 };
 
 var monster = function(y) {
   this.x = window.innerWidth;
   this.y = y;
   this.speed = 256;
+  this.width = monsterImage.width;
+  this.height = monsterImage.height;
 }
 var monsters = [];
+var supercreep = [];
 
 var bullet = function(xSpeed, ySpeed) {
   this.x = 0;
@@ -64,6 +68,8 @@ var bullet = function(xSpeed, ySpeed) {
   this.speed = 350;
   this.xSpeed = xSpeed*this.speed;
   this.ySpeed = ySpeed*this.speed;
+  this.width = bulletImage.width;
+  this.height = bulletImage.height;
 }
 var bullets = [];
 
@@ -77,6 +83,9 @@ if (!localStorage.monstersEscaped) {
 }
 if (!localStorage.bulletsFired) {
   localStorage.bulletsFired = 0;
+}
+if (!localStorage.total) {
+  localStorage.total = 0;
 }
 
 var fire = function(x, y) {
@@ -92,17 +101,33 @@ var fire = function(x, y) {
 // SPAWN NIGGAS
 var spawn = function() {
   var y = Math.random() * (window.innerHeight - monsterImage.height);
-  monsters.push(new monster(y));
+  if (localStorage.total%20 == 0) {
+    var creep = new monster(y);
+    creep.height = 50;
+    creep.width = 50;
+    creep.health = 10;
+    creep.speed = 200;
+    supercreep.push(creep);
+  } else {
+    monsters.push(new monster(y));
+  }
+  localStorage.total++;
 }
 
 var collide = function(monster, bullet) {
 	if (monster != undefined && bullet != undefined) {
-		return (monster.x < bullet.x + bulletImage.width &&
-monster.x + monsterImage.width > bullet.x &&
-monster.y < bullet.y + bulletImage.height &&
-monster.y + monsterImage.height > bullet.y);
+		return (monster.x < bullet.x + bullet.width &&
+monster.x + monster.width > bullet.x &&
+monster.y < bullet.y + bullet.height &&
+monster.y + monster.height > bullet.y);
 	}
 	return false;
+}
+
+var collide_v2 = function(monster, hero) {
+  return (monster.x < hero.width &&
+monster.y < hero.y + hero.height &&
+monster.y + monster.height > hero.y);
 }
 
 var update = function(modifier) {
@@ -117,10 +142,25 @@ var update = function(modifier) {
         ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
         localStorage.monstersEscaped++;
+      } else if ( collide_v2(monsters[i], hero)) {
+        ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+        monsters.splice(i,1);
+        death.play();
+        localStorage.monstersKilled++;
+        localStorage.bulletsFired++;
       } else {
         i++;
       }
     } while ( i < monsters.length );
+  }
+
+  if (supercreep.length) {
+    supercreep[0].x -= supercreep[0].speed * modifier;
+    if ( supercreep[0].x < 0 ) {
+      ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+      supercreep.pop();
+      localStorage.monstersEscaped++;
+    }
   }
 
   if (bullets.length) {
@@ -139,6 +179,23 @@ var update = function(modifier) {
         i++;
       }
     } while (i < bullets.length);
+  }
+
+  if (supercreep.length && bullet.length) {
+    i = 0;
+    do {
+      if (collide(supercreep[0], bullets[i])) {
+        //stuff
+        ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+        supercreep.pop();
+        death.play();
+        ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
+        bullets.splice(j,1);
+        localStorage.monstersKilled++;
+      } else {
+        i++;
+      }
+    } while (i < bullets.length && supercreep.length);
   }
 
   // if there are monsters and bullets on screen
@@ -182,6 +239,9 @@ var render = function() {
       for (var i = 0; i < monsters.length; i++) {
         ctx.drawImage(monsterImage, monsters[i].x, monsters[i].y);
       }
+    }
+    if (supercreep.length) {
+      ctx.drawImage(monsterImage, supercreep[0].x, supercreep[0].y, supercreep[0].width, supercreep[0].height);
     }
   }
 
