@@ -20,6 +20,7 @@ var bulletImage = new Image();
 var shotSound = new Audio ('sounds/shot.mp3');
 var death = new Audio('sounds/death.mp3');
 var bgMusic = new Audio('sounds/newMusic.mp3');
+var escaped = new Audio('sounds/escaped.mp3');
 bgMusic.play();
 
 // initialize images here
@@ -142,6 +143,7 @@ var update = function(modifier) {
         ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
         localStorage.monstersEscaped++;
+        escaped.play();
       } else if ( collide_v2(monsters[i], hero)) {
         ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
@@ -160,6 +162,7 @@ var update = function(modifier) {
       ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
       supercreep.pop();
       localStorage.monstersEscaped++;
+      escaped.play();
     }
   }
 
