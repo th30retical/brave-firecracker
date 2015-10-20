@@ -88,10 +88,13 @@ var spawn = function() {
 }
 
 var collide = function(monster, bullet) {
-  return (monster.x < bullet.x + bulletImage.width &&
+	if (monster != undefined && bullet != undefined) {
+		return (monster.x < bullet.x + bulletImage.width &&
 monster.x + monsterImage.width > bullet.x &&
 monster.y < bullet.y + bulletImage.height &&
 monster.y + monsterImage.height > bullet.y);
+	}
+	return false;
 }
 
 var update = function(modifier) {
