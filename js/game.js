@@ -18,6 +18,7 @@ var bulletImage = new Image();
 
 //init sounds
 var shotSound = new Audio ('sounds/shot.mp3');
+var escapeSound = new Audio ('sounds/escaped.mp3');
 var bgMusic = new Audio('sounds/testMusic.mp3');
 bgMusic.play();
 
@@ -105,6 +106,7 @@ var update = function(modifier) {
       if ( monsters[i].x < 0 ) {
         ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
+		escapeSound.play();
       } else {
         i++;
       }
