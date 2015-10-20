@@ -17,7 +17,7 @@ var bulletReady = false;
 var bulletImage = new Image();
 
 //init sounds
-var shotSound = new Audio ('sounds/shot.mp3');
+var shotSound = new Audio('sounds/shot.mp3');
 var death = new Audio('sounds/death.mp3');
 var bgMusic = new Audio('sounds/newMusic.mp3');
 var escaped = new Audio('sounds/escaped_v2.mp3');
@@ -102,7 +102,7 @@ var fire = function(x, y) {
 // SPAWN NIGGAS
 var spawn = function() {
   var y = Math.random() * (window.innerHeight - monsterImage.height);
-  if (localStorage.total%20 == 0) {
+  if (localStorage.total != 0 && localStorage.total%20 == 0) {
     var creep = new monster(y);
     creep.height = 50;
     creep.width = 50;
@@ -152,16 +152,10 @@ var update = function(modifier) {
     do {
       if ( monsters[i].x < 0 ) {
         clearScreen(monsters[i], 'escaped');
-        //ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
-        // localStorage.monstersEscaped++;
-        // escaped.play();
       } else if ( collide_v2(monsters[i], hero)) {
         clearScreen(monsters[i], 'killed');
-        // ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
-        // death.play();
-        // localStorage.monstersKilled++;
         localStorage.bulletsFired++;
       } else {
         i++;
@@ -173,17 +167,11 @@ var update = function(modifier) {
     supercreep[0].x -= supercreep[0].speed * modifier;
     if ( supercreep[0].x < 0 ) {
       clearScreen(supercreep[0], 'escaped');
-      // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
       supercreep.pop();
-      // localStorage.monstersEscaped++;
-      // escaped.play();
     } else if (collide_v2(supercreep[0], hero)) {
       clearScreen(supercreep[0], 'killed');
-      // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
       supercreep.pop();
-      // localStorage.monstersKilled++;
       localStorage.bulletsFired++;
-      // death.play();
     }
   }
 
@@ -194,11 +182,10 @@ var update = function(modifier) {
     }
     i = 0;
     do {
-      // impossible to shoot a bullet
+      // impossible to shoot a bullet backwards
       if ((bullets[i].x + bulletImage.width) > window.innerWidth || bullets[i].y < 0 || (bullets[i].y + bulletImage.height) > window.innerHeight) {
         // clear bullet from screen
         clearScreen(bullets[i], 'bullet');
-        // ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
         bullets.splice(i,1);
       } else {
         i++;
@@ -210,15 +197,19 @@ var update = function(modifier) {
     i = 0;
     do {
       if (collide(supercreep[0], bullets[i])) {
-        //stuff
-        // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
-        clearScreen(supercreep[0], 'killed');
-        supercreep.pop();
+        if (supercreep[0].health === 0) {
+
+          clearScreen(supercreep[0], 'killed');
+          supercreep.pop();
+          // localStorage.monstersKilled += 9 isn't working..
+          for (var j = 0; j < 9; j++) {
+            localStorage.monstersKilled++;
+          }
+        } else {
+          supercreep[0].health--;
+        }
         clearScreen(bullets[i], 'bullet');
-        // death.play();
-        // ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
         bullets.splice(j,1);
-        // localStorage.monstersKilled++;
       } else {
         i++;
       }
@@ -233,14 +224,10 @@ var update = function(modifier) {
     do {
       do {
         if (collide(monsters[i], bullets[j])) {
-          // ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
           clearScreen(monsters[i], 'killed');
           monsters.splice(i,1);
-          // death.play();
-          // ctx.clearRect(bullets[j].x, bullets[j].y, bullets[j].x + bulletImage.width, bullets[j].y + bulletImage.height);
           clearScreen(bullets[j], 'bullet');
           bullets.splice(j,1);
-          // localStorage.monstersKilled++;
           del = true;
         } else {
           j++;
