@@ -20,7 +20,7 @@ var bulletImage = new Image();
 var shotSound = new Audio ('sounds/shot.mp3');
 var death = new Audio('sounds/death.mp3');
 var bgMusic = new Audio('sounds/newMusic.mp3');
-var escaped = new Audio('sounds/escaped.mp3');
+var escaped = new Audio('sounds/escaped_v2.mp3');
 bgMusic.play();
 
 // initialize images here
@@ -49,8 +49,8 @@ bulletImage.src = 'images/bullet.png';
 var hero = {
   x: 0,
   y: window.innerHeight/2,
-  height:heroImage.height,
-  width:heroImage.width
+  height:32,
+  width:32
 };
 
 var monster = function(y) {
@@ -131,6 +131,17 @@ monster.y < hero.y + hero.height &&
 monster.y + monster.height > hero.y);
 }
 
+var clearScreen =  function(obj, type) {
+  ctx.clearRect(obj.x, obj.y, obj.x + obj.width, obj.y + obj.height);
+  if (type === 'escaped') {
+    localStorage.monstersEscaped++;
+    escaped.play();
+  } else if (type === 'killed') {
+    localStorage.monstersKilled++;
+    death.play();
+  }
+}
+
 var update = function(modifier) {
   var i;
   if (monsters.length) {
@@ -140,15 +151,17 @@ var update = function(modifier) {
     i = 0;
     do {
       if ( monsters[i].x < 0 ) {
-        ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+        clearScreen(monsters[i], 'escaped');
+        //ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
-        localStorage.monstersEscaped++;
-        escaped.play();
+        // localStorage.monstersEscaped++;
+        // escaped.play();
       } else if ( collide_v2(monsters[i], hero)) {
-        ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+        clearScreen(monsters[i], 'killed');
+        // ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
-        death.play();
-        localStorage.monstersKilled++;
+        // death.play();
+        // localStorage.monstersKilled++;
         localStorage.bulletsFired++;
       } else {
         i++;
@@ -159,10 +172,18 @@ var update = function(modifier) {
   if (supercreep.length) {
     supercreep[0].x -= supercreep[0].speed * modifier;
     if ( supercreep[0].x < 0 ) {
-      ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+      clearScreen(supercreep[0], 'escaped');
+      // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
       supercreep.pop();
-      localStorage.monstersEscaped++;
-      escaped.play();
+      // localStorage.monstersEscaped++;
+      // escaped.play();
+    } else if (collide_v2(supercreep[0], hero)) {
+      clearScreen(supercreep[0], 'killed');
+      // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+      supercreep.pop();
+      // localStorage.monstersKilled++;
+      localStorage.bulletsFired++;
+      // death.play();
     }
   }
 
@@ -173,10 +194,11 @@ var update = function(modifier) {
     }
     i = 0;
     do {
-      // impossible to shoot a bullet backwards
+      // impossible to shoot a bullet
       if ((bullets[i].x + bulletImage.width) > window.innerWidth || bullets[i].y < 0 || (bullets[i].y + bulletImage.height) > window.innerHeight) {
         // clear bullet from screen
-        ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
+        clearScreen(bullets[i], 'bullet');
+        // ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
         bullets.splice(i,1);
       } else {
         i++;
@@ -189,12 +211,14 @@ var update = function(modifier) {
     do {
       if (collide(supercreep[0], bullets[i])) {
         //stuff
-        ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+        // ctx.clearRect(supercreep[0].x, supercreep[0].y, supercreep[0].x + supercreep[0].width, supercreep[0].y + supercreep[0].height);
+        clearScreen(supercreep[0], 'killed');
         supercreep.pop();
-        death.play();
-        ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
+        clearScreen(bullets[i], 'bullet');
+        // death.play();
+        // ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
         bullets.splice(j,1);
-        localStorage.monstersKilled++;
+        // localStorage.monstersKilled++;
       } else {
         i++;
       }
@@ -209,12 +233,14 @@ var update = function(modifier) {
     do {
       do {
         if (collide(monsters[i], bullets[j])) {
-          ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+          // ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+          clearScreen(monsters[i], 'killed');
           monsters.splice(i,1);
-          death.play();
-          ctx.clearRect(bullets[j].x, bullets[j].y, bullets[j].x + bulletImage.width, bullets[j].y + bulletImage.height);
+          // death.play();
+          // ctx.clearRect(bullets[j].x, bullets[j].y, bullets[j].x + bulletImage.width, bullets[j].y + bulletImage.height);
+          clearScreen(bullets[j], 'bullet');
           bullets.splice(j,1);
-          localStorage.monstersKilled++;
+          // localStorage.monstersKilled++;
           del = true;
         } else {
           j++;
@@ -264,11 +290,8 @@ var render = function() {
 	ctx.fillText("Goblins dead: " + localStorage.monstersKilled, 0, 0);
   ctx.fillText("Goblins escaped: " + localStorage.monstersEscaped, 0, 30);
   var acc;
-  if (localStorage.bulletsFired == 0) {
-    acc = 100;
-  } else {
-    acc = Math.floor((localStorage.monstersKilled/localStorage.bulletsFired) * 100);
-  }
+  if (localStorage.bulletsFired == 0) { acc = 100; }
+  else { acc = Math.floor((localStorage.monstersKilled/localStorage.bulletsFired) * 100); }
   ctx.fillText("Accuracy: " + acc + "%", 0, 60);
 }
 
