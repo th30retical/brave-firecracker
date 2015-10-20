@@ -87,6 +87,13 @@ var spawn = function() {
   monsters.push(new monster(y));
 }
 
+var collide = function(monster, bullet) {
+  return (monster.x < bullet.x + bulletImage.width &&
+monster.x + monsterImage.width > bullet.x &&
+monster.y < bullet.y + bulletImage.height &&
+monster.y + monsterImage.height > bullet.y);
+}
+
 var update = function(modifier) {
   var i;
   if (monsters.length) {
@@ -98,6 +105,7 @@ var update = function(modifier) {
       if ( monsters[i].x < 0 ) {
         ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
         monsters.splice(i,1);
+        localStorage.monstersEscaped++;
       } else {
         i++;
       }
@@ -112,7 +120,7 @@ var update = function(modifier) {
     i = 0;
     do {
       // impossible to shoot a bullet backwards
-      if (bullets[i].x > window.innerWidth || bullets[i].y < 0 || bullets[i].y > window.innerHeight) {
+      if ((bullets[i].x + bulletImage.width) > window.innerWidth || bullets[i].y < 0 || (bullets[i].y + bulletImage.height) > window.innerHeight) {
         // clear bullet from screen
         ctx.clearRect(bullets[i].x, bullets[i].y, bullets[i].x + bulletImage.width, bullets[i].y + bulletImage.height);
         bullets.splice(i,1);
@@ -120,6 +128,31 @@ var update = function(modifier) {
         i++;
       }
     } while (i < bullets.length);
+  }
+
+  // if there are monsters and bullets on screen
+  if (monsters.length && bullets.length) {
+    var j = 0;
+    var del = false;
+    i = 0;
+    do {
+      do {
+        if (collide(monsters[i], bullets[j])) {
+          ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
+          monsters.splice(i,1);
+          ctx.clearRect(bullets[j].x, bullets[j].y, bullets[j].x + bulletImage.width, bullets[j].y + bulletImage.height);
+          bullets.splice(j,1);
+          localStorage.monstersKilled++;
+          del = true;
+        } else {
+          j++;
+        }
+      } while (j < bullets.length);
+      if (!del) {
+        i++;
+      }
+      del = false;
+    } while (i < monsters.length);
   }
 }
 
