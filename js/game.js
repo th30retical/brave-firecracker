@@ -16,6 +16,12 @@ var monsterImage = new Image();
 var bulletReady = false;
 var bulletImage = new Image();
 
+//init sounds
+var shotSound = new Audio ('sounds/shot.mp3');
+var death = new Audio('sounds/death.mp3');
+var bgMusic = new Audio('sounds/newMusic.mp3');
+bgMusic.play();
+
 // initialize images here
 bgImage.onload = function() {
   bgReady = true;
@@ -26,6 +32,7 @@ heroImage.onload = function() {
   heroReady = true;
 }
 heroImage.src = 'images/hero.png';
+heroImage.setAttribute("height","200px");
 
 monsterImage.onload = function() {
   monsterReady = true;
@@ -54,7 +61,7 @@ var monsters = [];
 var bullet = function(xSpeed, ySpeed) {
   this.x = 0;
   this.y = window.innerHeight/2;
-  this.speed = 300;
+  this.speed = 350;
   this.xSpeed = xSpeed*this.speed;
   this.ySpeed = ySpeed*this.speed;
 }
@@ -77,6 +84,7 @@ var fire = function(x, y) {
     var dir = Math.atan((y - (window.innerHeight/2))/x);
     bullets.push(new bullet(Math.cos(dir), Math.sin(dir)));
     localStorage.bulletsFired++;
+	  shotSound.play();
   }
 }
 
@@ -143,6 +151,7 @@ var update = function(modifier) {
         if (collide(monsters[i], bullets[j])) {
           ctx.clearRect(monsters[i].x, monsters[i].y, monsters[i].x + monsterImage.width, monsters[i].y + monsterImage.height);
           monsters.splice(i,1);
+          death.play();
           ctx.clearRect(bullets[j].x, bullets[j].y, bullets[j].x + bulletImage.width, bullets[j].y + bulletImage.height);
           bullets.splice(j,1);
           localStorage.monstersKilled++;
@@ -203,6 +212,7 @@ var render = function() {
 var main = function() {
   var now = Date.now();
   var delta = now - then;
+  if (bgMusic.ended) { bgMusic.play(); }
 
   update(delta / 1000);
   render();

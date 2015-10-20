@@ -1,7 +1,5 @@
 Todo:
-- collision detection for bullets and monsters
-- score keeping
-- sound
+- super creep
 
 Done:
 - background images covers entire screen
@@ -18,3 +16,6 @@ oct 20
 - localStorage
 - hero stays in the center of screen
 - don't need reset function
+- sounds
+- score keeping
+- collision detection
